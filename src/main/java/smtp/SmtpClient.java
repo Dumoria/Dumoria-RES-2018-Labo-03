@@ -11,7 +11,7 @@ public class SmtpClient implements ISmtpClient{
 
     private static final Logger LOG = Logger.getLogger(SmtpClient.class.getName());
     private String serverAddress;
-    private int port = 25;
+    private int port = 25;          //default port is 25
     private Socket socket;
     private PrintWriter writer;
     private BufferedReader reader;
@@ -20,6 +20,10 @@ public class SmtpClient implements ISmtpClient{
     public SmtpClient(String serverAddress, int port){
         this.serverAddress = serverAddress;
         this.port = port;
+    }
+
+    public SmtpClient(String serverAddress){
+        this.serverAddress = serverAddress;
     }
 
     public void sendMessage(Message message) throws IOException {
@@ -64,19 +68,10 @@ public class SmtpClient implements ISmtpClient{
         writer.write("Content-Type: text/plain; charset=\"utf-8\"\r\n");
         writer.write("From: " + message.getFrom() + "\r\n");
 
-        writer.write("To: " + message.getTo()[0]);
-        for(int i = 1; i < message.getTo().length; ++i){
-            writer.write(", " + message.getTo()[i]);
-        }
-        writer.write("\r\n");
-
-        writer.write("Cc: " + message.getCc()[0]);
-        for(int i = 1; i < message.getCc().length; ++i){
-            writer.write(", " + message.getCc()[i]);
-        }
-        writer.write("\r\n");
-
+        writeMultiplePerson(message.getTo(), "To: ");
+        writeMultiplePerson(message.getCc(), "Cc: ");
         writer.flush();
+
         LOG.info(message.getBody());
 
         writeEndOfMessage();
