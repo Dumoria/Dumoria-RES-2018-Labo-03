@@ -2,6 +2,7 @@ package smtp;
 
 
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+import model.mail.Message;
 
 import java.io.*;
 import java.net.Socket;
@@ -70,6 +71,7 @@ public class SmtpClient implements ISmtpClient{
 
         writeMultiplePerson(message.getTo(), "To: ");
         writeMultiplePerson(message.getCc(), "Cc: ");
+
         writer.flush();
 
         LOG.info(message.getBody());
@@ -79,7 +81,8 @@ public class SmtpClient implements ISmtpClient{
         line = reader.readLine();
         LOG.info(line);
 
-        quitAndDisconnect();
+        quit();
+        disconnect();
 
     }
 
@@ -111,10 +114,12 @@ public class SmtpClient implements ISmtpClient{
         writer.flush();
     }
 
-    public void quitAndDisconnect() throws IOException{
+    public void quit(){
         writer.write("QUIT\r\n");
         writer.flush();
+    }
 
+    public void disconnect() throws IOException{
         reader.close();
         writer.close();
         socket.close();
