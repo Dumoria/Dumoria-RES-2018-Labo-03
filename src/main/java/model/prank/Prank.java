@@ -47,8 +47,19 @@ public class Prank {
 
     public Message generateMailMessage(){
         Message msg = new Message();
-        msg.setBody(this.message + "\r\n" + victimSender.getFirstName());
 
+        //Set subject
+        int subjectEnd = 0;
+        int messageSize = message.length();
+        while(message.charAt(subjectEnd) != '\n' && subjectEnd < messageSize){
+            subjectEnd++;
+        }
+        msg.setSubject(this.message.substring(0, subjectEnd));
+
+        //Set body
+        msg.setBody(this.message.substring(subjectEnd + 1) + "\r\n" + victimSender.getFirstName());
+
+        //Set to
         int victimSize = victimRecipients.size();
         String[] to = new String[victimSize];
         for(int i = 0; i < victimSize; ++i){
@@ -56,6 +67,7 @@ public class Prank {
         }
         msg.setTo(to);
 
+        //Set Cc
         int witnessSize = witnessRecipients.size();
         String[] cc = new String[witnessSize];
         for(int i = 0; i < witnessSize; ++i){
@@ -63,6 +75,7 @@ public class Prank {
         }
         msg.setCc(cc);
 
+        //Set from
         msg.setFrom(victimSender.getAddress());
         return msg;
 
