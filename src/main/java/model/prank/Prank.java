@@ -54,10 +54,10 @@ public class Prank {
         while(message.charAt(subjectEnd) != '\n' && subjectEnd < messageSize){
             subjectEnd++;
         }
-        msg.setSubject(this.message.substring(0, subjectEnd));
+        msg.setSubject(message.substring(0, subjectEnd));
 
         //Set body
-        msg.setBody(this.message.substring(subjectEnd + 1) + "\r\n" + victimSender.getFirstName());
+        msg.setBody(message.substring(subjectEnd + 1) + "\r\n" + victimSender.getFirstName());
 
         //Set to
         int victimSize = victimRecipients.size();
