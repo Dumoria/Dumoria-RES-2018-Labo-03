@@ -76,7 +76,7 @@ public class SmtpClient implements ISmtpClient{
         writer.flush();
 
         //Load body
-        LOG.info(message.getBody());
+        writer.write(message.getBody());
         writeEndOfMessage();
 
         line = reader.readLine();
