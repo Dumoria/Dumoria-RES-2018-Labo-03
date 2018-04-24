@@ -27,6 +27,7 @@ public class ConfigurationManager implements IConfigurationManager{
     }
 
     private void loadProperties(String filename) throws IOException{
+
         FileInputStream fis = new FileInputStream(filename);
         Properties properties = new Properties();
         properties.load(fis);
@@ -35,7 +36,7 @@ public class ConfigurationManager implements IConfigurationManager{
         this.smtpServerPort = Integer.parseInt(properties.getProperty("smtpServerPort"));
         this.numberOfGroups = Integer.parseInt(properties.getProperty("numberOfGroups"));
         this.witnessesToCC = new ArrayList();
-        
+
         String witnesses = properties.getProperty("witnessesToCC");
         String[] witnessesAddresses = witnesses.split(",");
         for(String address : witnessesAddresses){
@@ -45,10 +46,38 @@ public class ConfigurationManager implements IConfigurationManager{
     }
 
     private List<Person> loadAddressesFromFile(String filename) throws IOException{
+        FileInputStream fis = new FileInputStream(filename);
+        InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+        BufferedReader reader = new BufferedReader(isr);
+        List<Person> addresses = new ArrayList<Person>();
+
+        String address = reader.readLine();
+        while(address != null){
+            addresses.add(new Person(address));
+            address = reader.readLine();
+        }
+
+        return addresses;
     }
 
 
     private List<String> loadMessagesFromFile(String filename) throws IOException{
+        FileInputStream fis = new FileInputStream(filename);
+        InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+        BufferedReader reader = new BufferedReader(isr);
+        List<String> messages = new ArrayList<String>();
+
+        String line = reader.readLine();
+        while(line != null){
+            String body = new String();
+            while((line != null) && (!line.equals("=="))){
+                body += (line + "\r\n");
+                line = reader.readLine();
+            }
+            messages.add(body);
+            line = reader.readLine();
+        }
+        return messages;
     }
 
     public List<Person> getWitnessesToCC() {
