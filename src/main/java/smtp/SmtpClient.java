@@ -1,9 +1,6 @@
 package smtp;
 
-
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import model.mail.Message;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.logging.Logger;
@@ -28,21 +25,22 @@ public class SmtpClient implements ISmtpClient{
     }
 
     public void sendMessage(Message message) throws IOException {
+
+        //Connection to the server
         LOG.info("Sending message");
-
         connect();
-
         String line = reader.readLine();
         LOG.info(line);
 
+        //Begin smtp protocol
         writer.write("EHLO localhost\r\n");
         writer.flush();
-
         line = reader.readLine();
         LOG.info(line);
 
+        //Print options
         if(!line.startsWith("250")){
-            throw new IOException("SMTP error: " + line);
+            throw new IOException("SMTP error: should have begin with 250, instead got " + line);
         }
 
         while(line.startsWith("250-")){
@@ -50,6 +48,7 @@ public class SmtpClient implements ISmtpClient{
             LOG.info(line);
         }
 
+        //Enter source
         writer.write("MAIL FROM:");
         writer.write(message.getFrom());
         writer.write("\r\n");
@@ -57,30 +56,33 @@ public class SmtpClient implements ISmtpClient{
         line = reader.readLine();
         LOG.info(line);
 
+        //Enter dest
         writeRCPT(message.getTo(), line);
         writeRCPT(message.getCc(), line);
         writeRCPT(message.getBcc(), line);
 
+        //------Enter body------
         writer.write("DATA");
         writer.write("\r\n");
         writer.flush();
         line = reader.readLine();
         LOG.info(line);
-        writer.write("Content-Type: text/plain; charset=\"utf-8\"\r\n");
-        writer.write("From: " + message.getFrom() + "\r\n");
 
+        //Src, dst and subject
+        writer.write("From: " + message.getFrom() + "\r\n");
         writeMultiplePerson(message.getTo(), "To: ");
         writeMultiplePerson(message.getCc(), "Cc: ");
-
+        writer.write("Subject: " + message.getSubject());
         writer.flush();
 
+        //Load body
         LOG.info(message.getBody());
-
         writeEndOfMessage();
 
         line = reader.readLine();
         LOG.info(line);
 
+        //Quit
         quit();
         disconnect();
 
@@ -97,16 +99,6 @@ public class SmtpClient implements ISmtpClient{
         }
     }
 
-    /*
-    public void writeSingleRCPTProcedur(){
-        writer.write("MAIL FROM:");
-        writer.write(message.getFrom());
-        writer.write("\r\n");
-        writer.flush();
-        line = reader.readLine();
-        LOG.info(line);
-    }*/
-
     public void writeEndOfMessage(){
         writer.write("\r\n");
         writer.write(".");
@@ -120,13 +112,16 @@ public class SmtpClient implements ISmtpClient{
     }
 
     public void disconnect() throws IOException{
-        reader.close();
-        writer.close();
-        socket.close();
+        if(reader != null)
+            reader.close();
+        if(writer != null)
+            writer.close();
+        if(socket != null)
+            socket.close();
     }
 
     public void connect() throws IOException{
-        Socket socket = new Socket(serverAddress, port);
+        socket = new Socket(serverAddress, port);
         writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 
