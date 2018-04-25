@@ -27,24 +27,27 @@ Afin de construire l'image Docker, il faut:
 
 	- Lancer Docker
 	- Se placer dans le dossier contenant le fichier Dockerfile
-	- Executer la commande:
-		docker build -t mockmock . 
+	- Executer la commande "docker build -t mockmock . "
 	
-Une fois l'image construite, executer la commande:
-	- docker run -p 2525:2525 -p 8282:8282 mockmock
+Une fois l'image construite:
+
+	- Executer la commande "docker run -p 2525:2525 -p 8282:8282 mockmock"
 	
 Il suffit alors de lancer le programme depuis Intellij pour pouvoir envoyer des mails et les recevoir depuis le container.
 
-Les mails sont disponible sur http://192.168.99.100:8282 ou l'adresse ip correspondante obtenue avec la commande:
-	docker-machine ip default
+Les mails sont disponible sur http://192.168.99.100:8282 ou l'adresse ip correspondante obtenue avec:
+
+	- Executer la commande "docker-machine ip default"
+	
 Il faudra alors également instancier la variable smtpServerAddress du fichier config.properties à la même valeur.
 
 Pour changer le port de communication smtp, il faut modifier la variable smtpServerPort à la valeur désirée. Il est également nécessaire de modifier les 2525:2525 en la valeur xx:xx souhaitée
 dans la commande docker run.
 
 Ne pas oublier après chaque utilisation d'effectuer les commandes:
-	- docker ps 				//pour récupérer l'identifiant du contener 
-	- docker kill idContainer // pour tuer le contener 
+
+	- Executer la commande "docker ps" 				 //pour récupérer l'identifiant du contener 
+	- Executer la commande "docker kill idContainer" // pour tuer le contener 
 
 	
 BIM.
